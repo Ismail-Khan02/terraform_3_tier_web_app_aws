@@ -4,7 +4,7 @@ resource "aws_lb" "external-alb" {
     internal           = false
     load_balancer_type = "application"
     security_groups    = [aws_security_group.alb-sg.id]
-    subnets            = var.public_subnet_ids
+    subnets            = [var.public_subnet_ids[0], var.public_subnet_ids[1]]
     
     enable_deletion_protection = false
     
@@ -40,10 +40,10 @@ resource "aws_lb_target_group" "external-alb-tg" {
 
 resource "aws_lb_target_group_attachment" "attachment" {
     target_group_arn = aws_lb_target_group.external-alb-tg.arn
-    target_id        = var.ecs_service_ip
+    target_id        = aws_instance.web_server.id
     port             = 80
 
-    depends_on = [ aws_instance.demoinstance ]
+    depends_on = [ aws_instance.web_server ]
   
 }
 

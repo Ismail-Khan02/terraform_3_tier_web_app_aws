@@ -6,7 +6,10 @@ resource "aws_db_instance" "mydb" {
   instance_class       = "db.t2.micro"
   db_name              = "mydb"
   username             = "username"
-  password             = "password"
+  
+  # FIXED: Use the variable
+  password             = var.db_password 
+  
   parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
   vpc_security_group_ids = [aws_security_group.database_sg.id]

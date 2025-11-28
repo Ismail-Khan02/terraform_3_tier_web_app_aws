@@ -1,5 +1,4 @@
-# fileName: alb_sg.tf
-
+# Application Load Balancer Security Group
 resource "aws_security_group" "alb-sg" {
   name        = "alb-sg"
   description = "Security group for Application Load Balancer"
@@ -24,7 +23,6 @@ resource "aws_security_group" "alb-sg" {
   }
 
   # Egress: Allow traffic TO the Web Servers
-  # It is best practice to scope this only to the Web SG, but 0.0.0.0/0 is common for ALBs
   egress {
     from_port   = 0
     to_port     = 0

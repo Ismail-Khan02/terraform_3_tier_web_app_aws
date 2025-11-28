@@ -1,3 +1,5 @@
+# Variables for the 3-Tier Web Application Infrastructure on AWS
+
 variable "aws_region" {
   description = "The AWS region to deploy resources"
   type        = string
@@ -7,7 +9,7 @@ variable "aws_region" {
 variable "availability_zones" {
   description = "List of availability zones"
   type        = list(string)
-  default     = ["us-east-1a", "us-east-1b"] # Added a second AZ for ALB high availability
+  default     = ["us-east-1a", "us-east-1b"] 
 }
 
 variable "environment" {
@@ -22,8 +24,7 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-# --- Subnet Configuration (Refactored to Lists) ---
-
+# --- Subnet Configuration ---
 variable "public_subnet_cidrs" {
   description = "CIDR blocks for Public Web Subnets"
   type        = list(string)
@@ -60,5 +61,14 @@ variable "db_password" {
   description = "Password for the RDS instance"
   type        = string
   sensitive   = true
-  # No default here for security; pass this via terraform.tfvars or CLI
+
+}
+
+# --- Database Configuration ---
+
+# Database username
+variable "db_username" {
+  description = "Username for the RDS instance"
+  type        = string
+  default     = "admin"
 }

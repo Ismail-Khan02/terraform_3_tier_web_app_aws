@@ -1,6 +1,6 @@
 # Creating Security Group 
 resource "aws_security_group" "web_sg" {
-    vpc_id = "${var.vpc_id}"
+    vpc_id = aws_vpc.main.id    
     name        = "web-sg"
     description = "Security group for web servers"
   

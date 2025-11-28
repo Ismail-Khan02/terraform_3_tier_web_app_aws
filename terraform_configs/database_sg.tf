@@ -2,7 +2,7 @@
 resource "aws_security_group" "database_sg" { 
   name        = "database-sg"
   description = "Security group for database"
-  vpc_id      = var.vpc_id
+  vpc_id      = aws_vpc.main.id
 
   # Ingress rule to allow traffic from application security group
   ingress {

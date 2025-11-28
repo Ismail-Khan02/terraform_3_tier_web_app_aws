@@ -25,7 +25,7 @@ resource "aws_route_table_association" "public_rta2" {
 }
 
 
-# --- PRIVATE ROUTE TABLE (Connects to NAT Gateway) ---
+# PRIVATE ROUTE TABLE (Connects to NAT Gateway) 
 resource "aws_route_table" "private_rt" {
   vpc_id = aws_vpc.main.id
 
@@ -43,6 +43,14 @@ resource "aws_route_table" "private_rt" {
 # Associate Application Subnet (Tier 2) with Private Route Table
 resource "aws_route_table_association" "app_rta1" {
   subnet_id      = aws_subnet.application-subnet-1.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+# fileName: route_table.tf (Add this block)
+
+# Associate Application Subnet 2 with Private Route Table
+resource "aws_route_table_association" "app_rta2" {
+  subnet_id      = aws_subnet.application-subnet-2.id
   route_table_id = aws_route_table.private_rt.id
 }
 

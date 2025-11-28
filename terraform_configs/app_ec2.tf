@@ -1,12 +1,11 @@
-# Application Server EC2 Instance
 resource "aws_instance" "app_server" {
+  count                  = 2
   ami                    = var.ec2_ami
   instance_type          = "t2.micro"
   
-  # PLACEMENT: Put this in the Application Subnet (Private)
-  subnet_id              = aws_subnet.application-subnet-1.id
+  # Logic: Distribute across App Subnet 1 and App Subnet 2
+  subnet_id              = count.index == 0 ? aws_subnet.application-subnet-1.id : aws_subnet.application-subnet-2.id
   
-  # SECURITY: Use the App Security Group
   vpc_security_group_ids = [aws_security_group.app_sg.id]
   key_name               = var.key_name
 
@@ -14,7 +13,7 @@ resource "aws_instance" "app_server" {
   user_data              = file("app_data.sh")
 
   tags = {
-    Name        = "app-server"
+    Name        = "app-server-${count.index + 1}"
     Environment = var.environment
   }
 }

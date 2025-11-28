@@ -7,7 +7,7 @@ resource "aws_db_instance" "mydb" {
   db_name              = "mydb"
   username             = var.db_username
   password             = var.db_password 
-  
+  multi_az             = true
   parameter_group_name = "default.mysql8.0"
   skip_final_snapshot  = true
   vpc_security_group_ids = [aws_security_group.database_sg.id]

@@ -38,6 +38,20 @@ resource "aws_subnet" "application-subnet-1" {
   }
 }
 
+# Creating Application Subnet 2 (Private)
+resource "aws_subnet" "application-subnet-2" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.application_subnet_cidrs[1]
+  availability_zone       = var.availability_zones[1]
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name        = "application-subnet-2"
+    Environment = var.environment
+  }
+}
+
+
 # Creating Database Private Subnet 1 (Private)
 resource "aws_subnet" "database-subnet-1" {
   vpc_id                  = aws_vpc.main.id

@@ -43,11 +43,10 @@ resource "aws_lb_target_group" "external-alb-tg" {
 }
 
 resource "aws_lb_target_group_attachment" "attachment" {
+    count            = 2
     target_group_arn = aws_lb_target_group.external-alb-tg.arn
-    target_id        = aws_instance.web_server.id
+    target_id        = aws_instance.web_server[count.index].id 
     port             = 80
-
-    depends_on = [ aws_instance.web_server ]
   
 }
 

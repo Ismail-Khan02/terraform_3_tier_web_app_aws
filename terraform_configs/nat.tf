@@ -18,6 +18,6 @@ resource "aws_nat_gateway" "nat" {
     Environment = var.environment
   }
 
-  # Ensure the Internet Gateway exists first
+# Ensure the Internet Gateway exists first
   depends_on = [aws_internet_gateway.igw]
 }

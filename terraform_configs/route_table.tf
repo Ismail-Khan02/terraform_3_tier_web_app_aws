@@ -47,7 +47,6 @@ resource "aws_route_table_association" "app_rta1" {
 }
 
 # Associate Database Subnets (Tier 3) with Private Route Table
-# (Optional: DBs usually don't need internet, but this allows updates if needed)
 resource "aws_route_table_association" "db_rta1" {
   subnet_id      = aws_subnet.database-subnet-1.id
   route_table_id = aws_route_table.private_rt.id

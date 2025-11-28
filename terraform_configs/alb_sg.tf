@@ -2,7 +2,7 @@
 resource "aws_security_group" "alb-sg" {
   name        = "alb-sg"
   description = "Security group for Application Load Balancer"
-  vpc_id      = aws_vpc.main.id  # Note: This variable needs to be a valid ID, see Step 3
+  vpc_id      = aws_vpc.main.id  
 
   # Ingress: Allow HTTP from the Internet
   ingress {
@@ -13,7 +13,7 @@ resource "aws_security_group" "alb-sg" {
     description = "Allow HTTP from Anywhere"
   }
 
-  # Ingress: Allow HTTPS from the Internet (Optional, if you add SSL later)
+  # Ingress: Allow HTTPS from the Internet 
   ingress {
     from_port   = 443
     to_port     = 443

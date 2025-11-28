@@ -1,23 +1,39 @@
-# 1. Allocate an Elastic IP for the NAT Gateway
-resource "aws_eip" "nat_eip" {
-  domain = "vpc"   
-
+# --- NAT Gateway for Availability Zone 1 ---
+resource "aws_eip" "nat_eip_1" {
+  domain = "vpc"
   tags = {
-    Name        = "nat-eip"
+    Name        = "nat-eip-1"
     Environment = var.environment
   }
 }
 
-# 2. Create the NAT Gateway in Public Subnet 1
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat_eip.id
+resource "aws_nat_gateway" "nat_1" {
+  allocation_id = aws_eip.nat_eip_1.id
   subnet_id     = aws_subnet.public-subnet-1.id
 
   tags = {
-    Name        = "main-nat-gateway"
+    Name        = "nat-gateway-1"
     Environment = var.environment
   }
+  depends_on = [aws_internet_gateway.igw]
+}
 
-# Ensure the Internet Gateway exists first
+# --- NAT Gateway for Availability Zone 2 ---
+resource "aws_eip" "nat_eip_2" {
+  domain = "vpc"
+  tags = {
+    Name        = "nat-eip-2"
+    Environment = var.environment
+  }
+}
+
+resource "aws_nat_gateway" "nat_2" {
+  allocation_id = aws_eip.nat_eip_2.id
+  subnet_id     = aws_subnet.public-subnet-2.id
+
+  tags = {
+    Name        = "nat-gateway-2"
+    Environment = var.environment
+  }
   depends_on = [aws_internet_gateway.igw]
 }

@@ -4,7 +4,9 @@ resource "aws_lb" "external-alb" {
     internal           = false
     load_balancer_type = "application"
     security_groups    = [aws_security_group.alb-sg.id]
-    subnets            = [var.public_subnet_ids[0], var.public_subnet_ids[1]]
+    subnets            = [
+        aws_subnet.public-subnet-1.id
+    ]
     
     enable_deletion_protection = false
     

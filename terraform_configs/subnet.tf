@@ -4,11 +4,10 @@ resource "aws_subnet" "public-subnet-1" {
   cidr_block        = var.subnet_cidr
   availability_zone = var.availability_zones[0]
   map_customer_owned_ip_on_launch = true
-  availability_zone = var.availability_zones[0] 
 
 
   tags = {
-    Name        = "subnet-1"
+    Name        = "public-subnet-1"
     Environment = var.environment
   }
 } 

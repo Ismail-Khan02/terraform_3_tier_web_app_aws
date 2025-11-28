@@ -6,6 +6,13 @@ variable "aws_region" {
   
 }
 
+variable "availability_zones" {    
+  description = "List of availability zones"
+  type        = list(string)
+  default     = ["us-east-1a"]
+  
+}
+
 variable "ec2_ami" {    
   description = "The AMI ID for the EC2 instance"
   type        = string

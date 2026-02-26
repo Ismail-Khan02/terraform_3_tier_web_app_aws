@@ -1,10 +1,10 @@
 # Creating 1st Web Subnet (Public)
 resource "aws_subnet" "public-subnet-1" {
-  vpc_id                  = aws_vpc.main.id  
-  cidr_block              = var.public_subnet_cidrs[0]
-  availability_zone       = var.availability_zones[0]
-  
-  map_public_ip_on_launch = true 
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public_subnet_cidrs[0]
+  availability_zone = var.availability_zones[0]
+
+  map_public_ip_on_launch = true
 
   tags = {
     Name        = "public-subnet-1"
@@ -13,10 +13,10 @@ resource "aws_subnet" "public-subnet-1" {
 }
 
 resource "aws_subnet" "public-subnet-2" {
-  vpc_id                  = aws_vpc.main.id  
+  vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_cidrs[1]
   availability_zone       = var.availability_zones[1]
-  map_public_ip_on_launch = true 
+  map_public_ip_on_launch = true
 
   tags = {
     Name        = "public-subnet-2"
@@ -26,11 +26,11 @@ resource "aws_subnet" "public-subnet-2" {
 
 # Creating Application Subnet 1 (Private)
 resource "aws_subnet" "application-subnet-1" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.application_subnet_cidrs[0]
-  availability_zone       = var.availability_zones[0]
-  
-  map_public_ip_on_launch = false 
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.application_subnet_cidrs[0]
+  availability_zone = var.availability_zones[0]
+
+  map_public_ip_on_launch = false
 
   tags = {
     Name        = "application-subnet-1"

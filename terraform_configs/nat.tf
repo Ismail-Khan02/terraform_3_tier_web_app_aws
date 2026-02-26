@@ -1,6 +1,6 @@
 # --- NAT Gateway for Availability Zone 1 ---
 resource "aws_eip" "nat_eip_1" {
-  domain = "vpc"
+#  domain = "vpc"
   tags = {
     Name        = "nat-eip-1"
     Environment = var.environment
@@ -20,7 +20,7 @@ resource "aws_nat_gateway" "nat_1" {
 
 # --- NAT Gateway for Availability Zone 2 ---
 resource "aws_eip" "nat_eip_2" {
-  domain = "vpc"
+#  domain = "vpc"
   tags = {
     Name        = "nat-eip-2"
     Environment = var.environment

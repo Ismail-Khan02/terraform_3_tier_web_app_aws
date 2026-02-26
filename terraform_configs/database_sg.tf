@@ -1,14 +1,14 @@
 # Define Security Group for Database Layer
-resource "aws_security_group" "database_sg" { 
+resource "aws_security_group" "database_sg" {
   name        = "database-sg"
   description = "Security group for database"
   vpc_id      = aws_vpc.main.id
 
-ingress {
+  ingress {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    security_groups = [aws_security_group.app_sg.id] 
+    security_groups = [aws_security_group.app_sg.id]
     description     = "Allow MySQL traffic from App SG"
   }
 

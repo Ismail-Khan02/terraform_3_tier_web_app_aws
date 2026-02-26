@@ -2,7 +2,7 @@
 resource "aws_security_group" "alb-sg" {
   name        = "alb-sg"
   description = "Security group for Application Load Balancer"
-  vpc_id      = aws_vpc.main.id  
+  vpc_id      = aws_vpc.main.id
 
   # Ingress: Allow HTTP from the Internet
   ingress {

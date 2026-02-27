@@ -11,7 +11,12 @@ resource "aws_instance" "app_server" {
   iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
 
   # SCRIPT: Run the Node.js install script
-  user_data = file("app_data.sh")
+  user_data = file("app_data.sh", {
+    db_host = aws_db_instance.mydb.address
+    db_user = var.db_username
+    db_pass = var.db_password 
+    db_name = var.db_name
+  })
 
   tags = {
     Name        = "app-server-${count.index + 1}"

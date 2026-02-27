@@ -57,13 +57,6 @@ variable "key_name" {
   default     = null # Set to null to avoid hardcoding, can be overridden with TF_VAR_key_name
 }
 
-variable "db_password" {
-  description = "Password for the RDS instance"
-  type        = string
-  sensitive   = true
-
-}
-
 # --- Database Configuration ---
 
 # Database username
@@ -71,4 +64,18 @@ variable "db_username" {
   description = "Username for the RDS instance"
   type        = string
   default     = "admin"
+}
+
+variable "db_password" {
+  description = "Password for the RDS instance"
+  type        = string
+  sensitive   = true
+
+}
+
+variable "db_name" {
+  description = "Database name for the RDS instance"
+  type        = string
+  default     = "mydb"
+  
 }

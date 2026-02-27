@@ -107,7 +107,7 @@ resource "aws_lb_target_group" "internal-alb-tg" {
 
 resource "aws_lb_listener" "internal_listener" {
   load_balancer_arn = aws_lb.internal-alb.arn
-  port              = "80"
+  port              = "3000"
   protocol          = "HTTP"
 
   default_action {

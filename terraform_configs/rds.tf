@@ -20,7 +20,7 @@ resource "aws_db_instance" "mydb" {
 }
 
 # Creating DB Subnet Group
-resource "aws_db_subnet_group" "mydb-subnet-group" {
+/* resource "aws_db_subnet_group" "mydb-subnet-group" {
   name       = "mydb-subnet-group"
   subnet_ids = [aws_subnet.database-subnet-1.id, aws_subnet.database-subnet-2.id]
 
@@ -28,9 +28,9 @@ resource "aws_db_subnet_group" "mydb-subnet-group" {
     Name        = "mydb-subnet-group"
     Environment = var.environment
   }
-}
+} */
 
-resource "aws_security_group" "db-sg" { 
+resource "aws_security_group" "db-sg" {
   name        = "db-sg"
   description = "Security group for RDS instance"
   vpc_id      = aws_vpc.main.id
@@ -39,7 +39,7 @@ resource "aws_security_group" "db-sg" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = [aws_security_group.app_sg.id]
+    security_groups = [aws_security_group.app_sg.id]
   }
-  
+
 }

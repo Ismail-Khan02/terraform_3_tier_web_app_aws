@@ -1,35 +1,63 @@
 #!/bin/bash
+# Delay to allow Networking and NAT Gateway to stabilize
+sleep 300 
 
-# Delay for 60 seconds to allow RDS and Networking to stabilize
-sleep 60
+# Install Node.js
+curl -sL https://rpm.nodesource.com/setup_16.x | bash - 
+yum install -y nodejs 
 
-# Install Node.js (Amazon Linux 2)
-curl -sL https://rpm.nodesource.com/setup_16.x | bash -
-yum install -y nodejs
+# Create App directory
+mkdir -p /var/www/app 
+cd /var/www/app 
 
-# Create a simple App directory
-mkdir -p /var/www/app
-cd /var/www/app
+# Initialize npm and install the MySQL driver locally for the app
+npm init -y
+npm install mysql2
 
-# Create a simple server file
+# Install PM2 GLOBALLY so the system can use it as a service
+npm install -g pm2
+
+# Create the server file using the injected Terraform variables
 cat <<EOF > app.js
 const http = require('http');
+const mysql = require('mysql2');
+
 const hostname = '0.0.0.0';
 const port = 3000;
+
+// Connect to the RDS Database injected by Terraform
+const connection = mysql.createConnection({
+  host: '${db_host}',
+  user: '${db_user}',
+  password: '${db_pass}',
+  database: '${db_name}'
+});
+
+// Add this error handler so the app doesn't crash if the DB isn't ready!
+connection.on('error', function(err) {
+  console.error('Database error:', err);
+});
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello from the Application Layer (Tier 2)!\\n');
+  
+  // Test the database connection
+  connection.ping((err) => {
+    if (err) {
+      res.end('Hello from App Tier! Database Status: DISCONNECTED - ' + err.message);
+    } else {
+      res.end('Hello from App Tier! Database Status: SUCCESSFULLY CONNECTED to ' + '${db_host}');
+    }
+  });
 });
 
 server.listen(port, hostname, () => {
-  console.log('Server running at http://' + hostname + ':' + port + '/');
+  console.log('Server running on port ' + port);
 });
 EOF
 
-# Install PM2 to keep the app running
-npm install pm2 -g
-pm2 start app.js
-pm2 startup
-pm2 save
+# Start the app with PM2 (using npx to bypass strict pathing issues)
+npx pm2 start app.js 
+npx pm2 startup 
+npx pm2 save

@@ -10,7 +10,7 @@ resource "aws_instance" "web_server" {
     internal_alb_dns = aws_lb.internal-alb.dns_name
   })
 
-  iam_instance_profile   = aws_iam_instance_profile.ssm_profile.name
+  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
 
   depends_on = [aws_lb.internal-alb] # Ensure ALB is created before EC2 instances
 
@@ -20,3 +20,4 @@ resource "aws_instance" "web_server" {
     Environment = var.environment
   }
 }
+

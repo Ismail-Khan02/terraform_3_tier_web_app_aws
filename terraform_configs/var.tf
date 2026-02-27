@@ -77,5 +77,5 @@ variable "db_name" {
   description = "Database name for the RDS instance"
   type        = string
   default     = "mydb"
-  
+
 }

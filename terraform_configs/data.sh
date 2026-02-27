@@ -1,9 +1,9 @@
 #!/bin/bash
 # Delay to ensure networking is stable
-sleep 60
+sleep 300
 
 # Install Apache
-sudo dnf install -y httpd
+sudo yum install -y httpd
 sudo systemctl start httpd
 sudo systemctl enable httpd
 

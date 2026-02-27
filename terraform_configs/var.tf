@@ -54,7 +54,7 @@ variable "ec2_ami" {
 variable "key_name" {
   description = "The name of the key pair"
   type        = string
-  default     = "my-key-pair"
+  default     = null # Set to null to avoid hardcoding, can be overridden with TF_VAR_key_name
 }
 
 variable "db_password" {

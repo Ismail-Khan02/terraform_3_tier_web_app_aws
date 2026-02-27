@@ -64,19 +64,19 @@ resource "aws_lb_listener" "external-alb-listener" {
 }
 
 resource "aws_lb" "internal-alb" {
-  name               = "internal-alb"
+  name               = "private-alb"
   internal           = true
   load_balancer_type = "application"
   security_groups    = [aws_security_group.internal-alb-sg.id]
   subnets = [
-    aws_subnet.private-subnet-1.id,
-    aws_subnet.private-subnet-2.id
+    aws_subnet.application-subnet-1.id,
+    aws_subnet.application-subnet-2.id
   ]
 
   enable_deletion_protection = false
 
   tags = {
-    Name        = "internal-alb"
+    Name        = "private-alb"
     Environment = var.environment
   }
 
@@ -84,7 +84,7 @@ resource "aws_lb" "internal-alb" {
 
 resource "aws_lb_target_group" "internal-alb-tg" {
   name     = "internal-alb-tg"
-  port     = 80
+  port     = 3000
   protocol = "HTTP"
   vpc_id   = aws_vpc.main.id
 
@@ -102,10 +102,10 @@ resource "aws_lb_target_group" "internal-alb-tg" {
     Name        = "internal-alb-tg"
     Environment = var.environment
   }
-  
+
 }
 
-resource "aws_lb_listener" "internal_listener" {  
+resource "aws_lb_listener" "internal_listener" {
   load_balancer_arn = aws_lb.internal-alb.arn
   port              = "80"
   protocol          = "HTTP"
@@ -114,13 +114,13 @@ resource "aws_lb_listener" "internal_listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.internal-alb-tg.arn
   }
-  
+
 }
 
 resource "aws_lb_target_group_attachment" "appp-tier-attachment" {
   count            = 2
   target_group_arn = aws_lb_target_group.internal-alb-tg.arn
   target_id        = aws_instance.app_server[count.index].id
-  port             = 80
+  port             = 3000
 
 }

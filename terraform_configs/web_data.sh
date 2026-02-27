@@ -1,21 +1,22 @@
 #!/bin/bash
-# Delay to ensure networking is stable
-sleep 60
+# Artificial delay to ensure networking/NAT Gateway is fully stable
+sleep 30
 
-# Install Apache
+# Install Apache (httpd)
 sudo dnf install -y httpd
 sudo systemctl start httpd
 sudo systemctl enable httpd
 
-# Create Proxy Configuration
-# This forwards traffic from Port 80 to your App Tier via the Internal ALB
+# Create a Reverse Proxy configuration
+# This sends all traffic from Port 80 on this Web Server to the Internal ALB
 cat <<EOF | sudo tee /etc/httpd/conf.d/proxy.conf
 <VirtualHost *:80>
     ProxyPreserveHost On
+    # Forwarding to the Internal ALB which handles the App Tier
     ProxyPass / http://${internal_alb_dns}/
     ProxyPassReverse / http://${internal_alb_dns}/
 </VirtualHost>
 EOF
 
-# Restart to apply proxy logic
+# Restart Apache to apply the proxy settings
 sudo systemctl restart httpd

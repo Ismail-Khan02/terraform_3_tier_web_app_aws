@@ -64,6 +64,20 @@ resource "aws_subnet" "database-subnet-1" {
     Environment = var.environment
   }
 }
+
+resource "aws_subnet" "database-subnet-2" { 
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.database_subnet_cidrs[1]
+  availability_zone       = var.availability_zones[1]
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name        = "database-subnet-2"
+    Environment = var.environment
+  }
+  
+}
+
 # Creating Database Private Subnet 2 (Private)
 resource "aws_subnet" "database-subnet-2" {
   vpc_id                  = aws_vpc.main.id

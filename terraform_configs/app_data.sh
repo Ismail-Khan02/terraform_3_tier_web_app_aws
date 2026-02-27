@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Delay for 60 seconds to allow RDS and Networking to stabilize
+sleep 60
+
 # Install Node.js (Amazon Linux 2)
 curl -sL https://rpm.nodesource.com/setup_16.x | bash -
 yum install -y nodejs

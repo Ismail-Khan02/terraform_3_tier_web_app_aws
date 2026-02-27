@@ -7,7 +7,8 @@ resource "aws_instance" "app_server" {
   subnet_id = count.index == 0 ? aws_subnet.application-subnet-1.id : aws_subnet.application-subnet-2.id
 
   vpc_security_group_ids = [aws_security_group.app_sg.id]
-  key_name               = var.key_name
+  
+  iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
 
   # SCRIPT: Run the Node.js install script
   user_data = file("app_data.sh")

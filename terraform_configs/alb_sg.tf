@@ -43,23 +43,23 @@ resource "aws_security_group" "internal-alb-sg" {
 
   # Ingress: Allow HTTP from the VPC
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
-    description = "Allow HTTP from VPC"
+    from_port       = 3000
+    to_port         = 3000
+    protocol        = "tcp"
+    cidr_blocks     = [aws_vpc.main.cidr_block]
+    description     = "Allow HTTP from VPC"
     security_groups = [aws_security_group.web_sg.id] # Allow from Web SG
   }
 
   # Ingress: Allow HTTPS from the VPC 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
-    description = "Allow HTTPS from VPC"
-    security_groups = [aws_security_group.web_sg.id] # Allow from Web SG
-  }
+ # ingress {
+ #   from_port       = 443
+ #   to_port         = 443
+ #   protocol        = "tcp"
+ #   cidr_blocks     = [aws_vpc.main.cidr_block]
+ #   description     = "Allow HTTPS from VPC"
+ #   security_groups = [aws_security_group.web_sg.id] # Allow from Web SG
+ # }
 
   # Egress: Allow traffic TO the Web Servers
   egress {
@@ -67,7 +67,7 @@ resource "aws_security_group" "internal-alb-sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  
-}
+
+  }
 
 }

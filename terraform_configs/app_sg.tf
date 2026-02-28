@@ -9,7 +9,7 @@ resource "aws_security_group" "app_sg" {
     from_port       = 3000
     to_port         = 3000
     protocol        = "tcp"
-    security_groups = [aws_security_group.web_sg.id]
+    security_groups = [aws_security_group.internal-alb-sg.id]
     description     = "Allow traffic from Web Layer"
   }
 

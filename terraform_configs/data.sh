@@ -1,6 +1,6 @@
 #!/bin/bash
 # Delay to ensure networking is stable
-sleep 300
+sleep 180
 
 # Install Apache
 sudo yum install -y httpd
@@ -12,8 +12,8 @@ sudo systemctl enable httpd
 cat <<EOF | sudo tee /etc/httpd/conf.d/proxy.conf
 <VirtualHost *:80>
     ProxyPreserveHost On
-    ProxyPass / http://${internal_alb_dns}/
-    ProxyPassReverse / http://${internal_alb_dns}/
+    ProxyPass / http://${internal_alb_dns}:3000/
+    ProxyPassReverse / http://${internal_alb_dns}:3000/
 </VirtualHost>
 EOF
 

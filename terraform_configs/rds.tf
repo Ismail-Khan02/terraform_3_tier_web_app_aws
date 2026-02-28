@@ -30,7 +30,7 @@ resource "aws_db_instance" "mydb" {
   }
 } */
 
-resource "aws_security_group" "db-sg" {
+/* resource "aws_security_group" "db-sg" {
   name        = "db-sg"
   description = "Security group for RDS instance"
   vpc_id      = aws_vpc.main.id
@@ -42,4 +42,4 @@ resource "aws_security_group" "db-sg" {
     security_groups = [aws_security_group.app_sg.id]
   }
 
-}
+} */

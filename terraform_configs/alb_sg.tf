@@ -13,14 +13,14 @@ resource "aws_security_group" "alb-sg" {
     description = "Allow HTTP from Anywhere"
   }
 
-  # Ingress: Allow HTTPS from the Internet 
+  /* # Ingress: Allow HTTPS from the Internet 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTPS from Anywhere"
-  }
+  } */
 
   # Egress: Allow traffic TO the Web Servers
   egress {

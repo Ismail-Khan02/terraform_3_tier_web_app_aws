@@ -117,7 +117,7 @@ resource "aws_lb_listener" "internal_listener" {
 
 }
 
-resource "aws_lb_target_group_attachment" "appp-tier-attachment" {
+resource "aws_lb_target_group_attachment" "app-tier-attachment" {
   count            = 2
   target_group_arn = aws_lb_target_group.internal-alb-tg.arn
   target_id        = aws_instance.app_server[count.index].id

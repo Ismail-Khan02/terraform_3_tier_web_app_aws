@@ -1,6 +1,6 @@
 #!/bin/bash
 # Delay to allow Networking and NAT Gateway to stabilize
-sleep 300 
+sleep 180 
 
 # Install Node.js
 curl -sL https://rpm.nodesource.com/setup_16.x | bash - 
@@ -33,7 +33,7 @@ const connection = mysql.createConnection({
   database: '${db_name}'
 });
 
-// Add this error handler so the app doesn't crash if the DB isn't ready!
+// Handle connection errors
 connection.on('error', function(err) {
   console.error('Database error:', err);
 });

@@ -46,7 +46,14 @@ resource "aws_security_group" "internal-alb-sg" {
     from_port       = 3000
     to_port         = 3000
     protocol        = "tcp"
-    cidr_blocks     = [aws_vpc.main.cidr_block]
+    description     = "Allow HTTP from VPC"
+    security_groups = [aws_security_group.web_sg.id] # Allow from Web SG
+  }
+
+  ingress {
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
     description     = "Allow HTTP from VPC"
     security_groups = [aws_security_group.web_sg.id] # Allow from Web SG
   }

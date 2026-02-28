@@ -4,7 +4,7 @@ resource "aws_security_group" "app_sg" {
   description = "Security group for Application Server"
   vpc_id      = aws_vpc.main.id
 
-  # Ingress: Allow traffic ONLY from Web SG (e.g., on port 3000)
+  # Ingress: Allow traffic ONLY from Internal ALB (e.g., on port 3000)
   ingress {
     from_port       = 3000
     to_port         = 3000

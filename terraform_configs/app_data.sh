@@ -57,7 +57,6 @@ server.listen(port, hostname, () => {
 });
 EOF
 
-# Start the app with PM2 (using npx to bypass strict pathing issues)
 npx pm2 start app.js 
 npx pm2 startup 
 npx pm2 save

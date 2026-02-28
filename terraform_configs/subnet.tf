@@ -51,7 +51,6 @@ resource "aws_subnet" "application-subnet-2" {
   }
 }
 
-
 # Creating Database Private Subnet 1 (Private)
 resource "aws_subnet" "database-subnet-1" {
   vpc_id                  = aws_vpc.main.id
@@ -64,7 +63,6 @@ resource "aws_subnet" "database-subnet-1" {
     Environment = var.environment
   }
 }
-
 
 # Creating Database Private Subnet 2 (Private)
 resource "aws_subnet" "database-subnet-2" {

@@ -28,17 +28,6 @@ resource "aws_security_group_rule" "allow_https_from_alb" {
   description              = "Allow HTTPS traffic from ALB SG"
 }
 
-/* # SSH access from from anywhere
-resource "aws_security_group_rule" "allow_ssh_from_anywhere" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.web_sg.id
-  description       = "Allow SSH access from anywhere"
-}
- */
 # Egress rule to allow all outbound traffic
 resource "aws_security_group_rule" "allow_all_outbound" {
   type              = "egress"

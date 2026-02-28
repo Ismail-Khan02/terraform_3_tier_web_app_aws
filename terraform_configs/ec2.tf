@@ -12,11 +12,11 @@ resource "aws_instance" "web_server" {
 
   iam_instance_profile = aws_iam_instance_profile.ssm_profile.name
 
-  depends_on = [aws_lb.internal-alb] # Ensure ALB is created before EC2 instances
+  depends_on = [aws_lb.internal-alb] 
 
 
   tags = {
-    Name        = "web-server-${count.index + 1}" # Names them web-server-1 and web-server-2
+    Name        = "web-server-${count.index + 1}" 
     Environment = var.environment
   }
 }

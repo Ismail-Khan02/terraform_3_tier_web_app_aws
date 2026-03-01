@@ -1,33 +1,35 @@
 # High Availability 3-Tier Web Architecture on AWS with Terraform
 
-This project provisions a production-grade, highly available 3-Tier Web Architecture on AWS using Terraform. It demonstrates infrastructure-as-code (IaC) best practices, including Multi-AZ redundancy, secure networking with NAT Gateways, and strict security group chaining.
+This project provisions a production-grade, highly available 3-Tier Web Architecture on AWS using Terraform. It demonstrates infrastructure-as-code (IaC) best practices, including Multi-AZ redundancy, secure networking with NAT Gateways, strict security group chaining, and dynamic instance bootstrapping.
 
 ![Architecture Diagram](terraform_3_tier_web_app_aws.png)
 
-## 🏗 Architecture Overview
+## 🏛️ Architecture Overview
 
 The infrastructure is designed for fault tolerance and security, distributed across **two Availability Zones (us-east-1a, us-east-1b)**.
 
 ### 1. Presentation Tier (Public)
-* **Application Load Balancer (ALB):** Distributes incoming HTTP traffic across web servers in multiple zones.
-* **Web Servers (Apache):** Hosted in public subnets to serve static content and proxy requests.
-* **NAT Gateways:** Two distinct NAT Gateways (one per zone) to provide secure internet access for private instances without exposing them to inbound traffic.
+* **External Application Load Balancer (ALB):** Distributes incoming HTTP traffic from the internet across the web servers.
+* **Web Servers (Apache on Port 80):** Hosted in public subnets. They serve a dedicated health check file (`/health.html`) and act as a secure reverse proxy, forwarding all other traffic to the Internal ALB.
+* **NAT Gateways:** Two distinct NAT Gateways (one per zone) to provide secure internet access for private App Tier instances (for downloading packages like Node.js) without exposing them to inbound traffic.
 
 ### 2. Application Tier (Private)
-* **Node.js App Servers:** Hosted in private subnets. They run a Node.js API and are not accessible directly from the internet.
-* **Security:** Only accepts traffic from the Web Tier Security Group.
+* **Internal Application Load Balancer (ALB):** Acts as the secure middleman, taking traffic from the Web Tier proxy and distributing it across the App Servers.
+* **Node.js App Servers (Port 3000):** Hosted in private subnets. They run the core Node.js application, evaluate a lightweight `/health` route, and maintain the active connection to the database.
+* **Security:** Locked down to strictly accept traffic *only* from the Internal ALB Security Group.
 
 ### 3. Data Tier (Private)
 * **RDS MySQL (Multi-AZ):** A primary database instance with a synchronous standby replica in a second availability zone for automatic failover.
-* **Security:** Locked down to only accept connections from the Application Tier.
+* **Security:** Locked down to strictly accept connections *only* from the Application Tier Security Group.
 
-## 🚀 Features
+## ✨ Features
 * **High Availability:** All layers (Web, App, DB, Network) are redundant across two zones.
 * **Security:** "Defense in Depth" strategy using VPC, Private Subnets, and Security Group chaining.
 * **Resiliency:** If one Availability Zone goes offline, the application remains fully functional using resources in the second zone.
-* **Automation:** Full infrastructure provisioning via Terraform user data scripts.
+* **Dynamic Bootstrapping:** Uses Terraform's `templatefile()` function to seamlessly inject live infrastructure endpoints (Internal ALB DNS, RDS Endpoints) directly into the EC2 user data deployment scripts at runtime.
+* **Dedicated Health Checks:** Implements custom, lightweight health check paths to ensure accurate Target Group routing without triggering false positives.
 
-## 🛠 Prerequisites
+## 🛠️ Prerequisites
 
 * **Terraform:** v1.0+ installed locally.
 * **AWS CLI:** Configured with valid credentials (`aws configure`).
@@ -39,10 +41,10 @@ The infrastructure is designed for fault tolerance and security, distributed acr
 * `vpc.tf` / `subnet.tf` / `route_table.tf` / `nat.tf`: Networking core.
 * `ec2.tf` / `app_ec2.tf`: Compute resources (Web & App tiers).
 * `rds.tf`: Database resources.
-* `alb.tf`: Load Balancer and Target Groups.
+* `alb.tf`: Load Balancers and Target Groups.
 * `*_sg.tf`: Security Groups (Firewalls).
 
-## ⚡ Deployment Instructions
+## 🚀 Deployment Instructions
 
 **1. Initialize Terraform**
 Download required providers and initialize the backend.

@@ -22,10 +22,10 @@ The infrastructure is designed for fault tolerance and security, distributed acr
 * **RDS MySQL (Multi-AZ):** A primary database instance with a synchronous standby replica in a second availability zone for automatic failover.
 * **Security:** Locked down to strictly accept connections *only* from the Application Tier Security Group.
 
-## ✨ Features
+## ✨ Key Features
+* **Keyless Access (SSM):** No SSH keys required. Instances are accessed securely via AWS Systems Manager (SSM) Session Manager, entirely eliminating the need to expose Port 22.
 * **High Availability:** All layers (Web, App, DB, Network) are redundant across two zones.
 * **Security:** "Defense in Depth" strategy using VPC, Private Subnets, and Security Group chaining.
-* **Resiliency:** If one Availability Zone goes offline, the application remains fully functional using resources in the second zone.
 * **Dynamic Bootstrapping:** Uses Terraform's `templatefile()` function to seamlessly inject live infrastructure endpoints (Internal ALB DNS, RDS Endpoints) directly into the EC2 user data deployment scripts at runtime.
 * **Dedicated Health Checks:** Implements custom, lightweight health check paths to ensure accurate Target Group routing without triggering false positives.
 
@@ -33,13 +33,13 @@ The infrastructure is designed for fault tolerance and security, distributed acr
 
 * **Terraform:** v1.0+ installed locally.
 * **AWS CLI:** Configured with valid credentials (`aws configure`).
-* **SSH Key Pair:** An AWS EC2 Key Pair named `my-key-pair` created in `us-east-1`.
+* *(Note: An SSH Key Pair is **not** required for this project, as access is managed securely via AWS SSM).*
 
 ## 📂 Project Structure
 
 * `main.tf` / `provider.tf`: Provider configuration.
 * `vpc.tf` / `subnet.tf` / `route_table.tf` / `nat.tf`: Networking core.
-* `ec2.tf` / `app_ec2.tf`: Compute resources (Web & App tiers).
+* `ec2.tf` / `app_ec2.tf`: Compute resources (Web & App tiers) with SSM instance profiles attached.
 * `rds.tf`: Database resources.
 * `alb.tf`: Load Balancers and Target Groups.
 * `*_sg.tf`: Security Groups (Firewalls).

@@ -43,6 +43,44 @@ variable "application_subnet_ciders" {
   default     = ["10.0.11.0/24", "10.0.12.0/24"]
 }
 
+# Auto Scaling Configuration
+variable "web_asg_desired_capacity" {
+  description = "Desired capacity for the web tier Auto Scaling Group"
+  type        = number
+  default     = 2
+}
+
+variable "web_asg_min_size" { 
+  description = "Minimum size for the web tier Auto Scaling Group"
+  type        = number
+  default     = 2
+  
+}
+
+variable "web_asg_max_size" { 
+  description = "Maximum size for the web tier Auto Scaling Group"
+  type        = number
+  default     = 4
+  
+}
+
+variable "app_asg_desired_capacity" {
+  description = "Desired capacity for the app tier Auto Scaling Group"
+  type        = number
+  default     = 2
+}
+
+variable "app_asg_min_size" {
+  description = "Minimum size for the app tier Auto Scaling Group"
+  type        = number
+  default     = 2
+}
+
+variable "app_asg_max_size" {
+  description = "Maximum size for the app tier Auto Scaling Group"
+  type        = number
+  default     = 4
+}
 
 # --- Instance Configuration ---
 
@@ -79,4 +117,10 @@ variable "db_name" {
   type        = string
   default     = "mydb"
 
+}
+
+variable "alert_email" {
+  description = "Email address for CloudWatch alarms"
+  type        = string
+  
 }

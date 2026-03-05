@@ -12,9 +12,9 @@ resource "aws_launch_template" "web_launch_template" {
     name = aws_iam_instance_profile.ssm_profile.name
   }
 
-  user_data = templatefile("data.sh", {
+  user_data = base64encode(templatefile("data.sh", {
     internal_alb_dns = aws_lb.internal-alb.dns_name
-  })
+  }))
 
   tag_specifications {
     resource_type = "instance"
@@ -43,7 +43,7 @@ resource "aws_autoscaling_group" "web_asg" {
     version = "$Latest"
   }
   vpc_zone_identifier       = [aws_subnet.web-subnet-1.id, aws_subnet.web-subnet-2.id]
-  target_group_arns         = [aws_lb_target_group.web_tg.arn]
+  target_group_arns         = [aws_lb_target_group.external-alb-tg.arn]
 
   tag {
     key                 = "Name"

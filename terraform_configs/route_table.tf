@@ -27,12 +27,13 @@ resource "aws_route_table" "private_rt_1" {
   tags = { Name = "private-rt-1", Environment = var.environment }
 }
 
+resource "aws_route_table_association" "web_rta1" {
+  subnet_id      = aws_subnet.web-subnet-1.id
+  route_table_id = aws_route_table.private_rt_1.id
+  
+}
 resource "aws_route_table_association" "app_rta1" {
   subnet_id      = aws_subnet.application-subnet-1.id
-  route_table_id = aws_route_table.private_rt_1.id
-}
-resource "aws_route_table_association" "db_rta1" {
-  subnet_id      = aws_subnet.database-subnet-1.id
   route_table_id = aws_route_table.private_rt_1.id
 }
 
@@ -46,11 +47,11 @@ resource "aws_route_table" "private_rt_2" {
   tags = { Name = "private-rt-2", Environment = var.environment }
 }
 
-resource "aws_route_table_association" "app_rta2" {
-  subnet_id      = aws_subnet.application-subnet-2.id
+resource "aws_route_table_association" "web_rta2" {
+  subnet_id      = aws_subnet.web-subnet-2.id
   route_table_id = aws_route_table.private_rt_2.id
 }
-resource "aws_route_table_association" "db_rta2" {
-  subnet_id      = aws_subnet.database-subnet-2.id
+resource "aws_route_table_association" "app_rta2" {
+  subnet_id      = aws_subnet.application-subnet-2.id
   route_table_id = aws_route_table.private_rt_2.id
 }

@@ -31,17 +31,18 @@ variable "public_subnet_cidrs" {
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
+variable "web_subnet_ciders" {
+  description = "CIDR blocks for Web Subnets"
+  type        = list(string)
+  default     = ["10.0.3.0/24", "10.0.4.0/24"]
+}
+
 variable "application_subnet_cidrs" {
   description = "CIDR blocks for Application Subnets"
   type        = list(string)
   default     = ["10.0.11.0/24", "10.0.12.0/24"]
 }
 
-variable "database_subnet_cidrs" {
-  description = "CIDR blocks for Database Subnets"
-  type        = list(string)
-  default     = ["10.0.21.0/24", "10.0.22.0/24"]
-}
 
 # --- Instance Configuration ---
 

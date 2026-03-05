@@ -1,6 +1,6 @@
 #!/bin/bash
 # Delay to ensure networking is stable
-sleep 300
+sleep 300 
 
 # Install Apache
 sudo yum install -y httpd

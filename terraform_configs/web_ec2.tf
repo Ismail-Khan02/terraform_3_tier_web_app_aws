@@ -35,9 +35,9 @@ resource "aws_launch_template" "web_launch_template" {
 # Web Tier Auto Scaling Group
 resource "aws_autoscaling_group" "web_asg" {
   name                      = "web-asg"
-  max_size                  = 4
-  min_size                  = 2
-  desired_capacity          = 2
+  max_size                  = var.web_asg_max_size
+  min_size                  = var.web_asg_min_size
+  desired_capacity          = var.web_asg_desired_capacity
   health_check_type         = "ELB"
   health_check_grace_period = 300
   launch_template {

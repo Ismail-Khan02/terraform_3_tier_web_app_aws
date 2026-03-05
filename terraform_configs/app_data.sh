@@ -1,6 +1,6 @@
 #!/bin/bash
 # Delay to allow Networking and NAT Gateway to stabilize
-sleep 180 
+sleep 300 
 
 # Install Node.js
 curl -sL https://rpm.nodesource.com/setup_16.x | bash - 

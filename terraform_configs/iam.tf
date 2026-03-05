@@ -32,3 +32,14 @@ resource "aws_iam_instance_profile" "ssm_profile" {
   role = aws_iam_role.ssm_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "secrets_attach" {
+  role       = aws_iam_role.ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+  
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_attach" {
+  role       = aws_iam_role.ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  
+}

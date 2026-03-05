@@ -38,6 +38,8 @@ resource "aws_autoscaling_group" "web_asg" {
   max_size                  = 4
   min_size                  = 2
   desired_capacity          = 2
+  health_check_type         = "ELB"
+  health_check_grace_period = 300
   launch_template {
     id      = aws_launch_template.web_launch_template.id
     version = "$Latest"

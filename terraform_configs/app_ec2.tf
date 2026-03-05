@@ -38,9 +38,9 @@ resource "aws_launch_template" "app_launch_template" {
 # App Tier Auto Scaling Group
 resource "aws_autoscaling_group" "app_asg" {
   name                      = "app-asg"
-  max_size                  = 4
-  min_size                  = 2
-  desired_capacity          = 2
+  max_size                  = var.app_asg_max_size
+  min_size                  = var.app_asg_min_size
+  desired_capacity          = var.app_asg_desired_capacity
   health_check_type         = "ELB"
   health_check_grace_period = 300 
   launch_template {

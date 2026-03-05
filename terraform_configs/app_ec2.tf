@@ -13,12 +13,11 @@ resource "aws_launch_template" "app_launch_template" {
   }
 
   user_data = base64encode(templatefile("app_data.sh", {
+    aws_region = var.aws_region
     db_host = aws_db_instance.mydb.address
-    db_user = var.db_username
-    db_pass = var.db_password
     db_name = var.db_name
   }))
-
+  
   tag_specifications {
     resource_type = "instance"
     tags = {

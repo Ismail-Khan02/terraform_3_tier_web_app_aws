@@ -1,13 +1,10 @@
 #!/bin/bash
-# Delay to allow Networking and NAT Gateway to stabilize
+# Delay to allow Networking and NAT Gateway to stabilize (Temporary Hack)
 sleep 180
 
-# Install Node.js
-curl -sL https://rpm.nodesource.com/setup_16.x | bash -
-yum install -y nodejs
-
-# Install AWS CLI v2 (needed to fetch secrets)
-yum install -y awscli
+# FIX 1: Install Node.js 20.x (Current LTS) instead of End-of-Life 16.x
+curl -sL https://rpm.nodesource.com/setup_20.x | bash -
+yum install -y nodejs awscli
 
 # Fetch DB credentials from Secrets Manager at runtime
 SECRET=$(aws secretsmanager get-secret-value \
@@ -31,7 +28,7 @@ npm install mysql2
 # Install PM2 GLOBALLY so the system can use it as a service
 npm install -g pm2
 
-# Create the application
+# Write the application code securely
 cat << 'APPEOF' > app.js
 const http = require('http');
 const mysql = require('mysql2/promise');
@@ -249,7 +246,28 @@ initDB()
   .catch(err => { console.error('Failed to initialise database:', err); process.exit(1); });
 APPEOF
 
-# Start PM2 with all config passed as environment variables
-DB_HOST=${db_host} DB_USER=$DB_USER DB_PASS=$DB_PASS DB_NAME=${db_name} npx pm2 start app.js
-npx pm2 startup
-npx pm2 save
+# FIX 2: Stop the Process List Secret Leak using an Ecosystem file
+# We dynamically generate a PM2 config file and inject variables cleanly.
+# Notice we DO NOT quote 'EOF' here, so bash evaluates $DB_USER and $DB_PASS.
+cat << ECOSYSTEM_EOF > ecosystem.config.js
+module.exports = {
+  apps : [{
+    name   : "guestbook-app",
+    script : "app.js",
+    env: {
+      DB_HOST: "${db_host}",
+      DB_USER: "$DB_USER",
+      DB_PASS: "$DB_PASS",
+      DB_NAME: "${db_name}"
+    }
+  }]
+}
+ECOSYSTEM_EOF
+
+# FIX 3: Lock down the secrets file so only the root user can read it
+chmod 600 ecosystem.config.js
+
+# FIX 4: Start PM2 using the secure config and ensure reliable reboot survival
+pm2 start ecosystem.config.js
+pm2 startup systemd -u root --hp /root
+pm2 save

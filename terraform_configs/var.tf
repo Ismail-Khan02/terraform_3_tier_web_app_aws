@@ -37,7 +37,7 @@ variable "web_subnet_ciders" {
   default     = ["10.0.3.0/24", "10.0.4.0/24"]
 }
 
-variable "application_subnet_cidrs" {
+variable "application_subnet_ciders" {
   description = "CIDR blocks for Application Subnets"
   type        = list(string)
   default     = ["10.0.11.0/24", "10.0.12.0/24"]

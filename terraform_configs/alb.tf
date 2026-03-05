@@ -42,15 +42,6 @@ resource "aws_lb_target_group" "external-alb-tg" {
 
 }
 
-resource "aws_lb_target_group_attachment" "attachment" {
-  count            = 2
-  target_group_arn = aws_lb_target_group.external-alb-tg.arn
-  target_id        = aws_instance.web_server[count.index].id
-  port             = 80
-
-}
-
-
 resource "aws_lb_listener" "external-alb-listener" {
   load_balancer_arn = aws_lb.external-alb.arn
   port              = "80"
@@ -60,7 +51,7 @@ resource "aws_lb_listener" "external-alb-listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.external-alb-tg.arn
   }
-
+  
 }
 
 resource "aws_lb" "internal-alb" {
@@ -114,13 +105,5 @@ resource "aws_lb_listener" "internal_listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.internal-alb-tg.arn
   }
-
-}
-
-resource "aws_lb_target_group_attachment" "app-tier-attachment" {
-  count            = 2
-  target_group_arn = aws_lb_target_group.internal-alb-tg.arn
-  target_id        = aws_instance.app_server[count.index].id
-  port             = 3000
 
 }

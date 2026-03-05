@@ -12,12 +12,12 @@ resource "aws_launch_template" "app_launch_template" {
     name = aws_iam_instance_profile.ssm_profile.name
   }
 
-  user_data = templatefile("app_data.sh", {
+  user_data = base64encode(templatefile("app_data.sh", {
     db_host = aws_db_instance.mydb.address
     db_user = var.db_username
     db_pass = var.db_password
     db_name = var.db_name
-  })
+  }))
 
   tag_specifications {
     resource_type = "instance"
@@ -46,7 +46,7 @@ resource "aws_autoscaling_group" "app_asg" {
     version = "$Latest"
   }
   vpc_zone_identifier       = [aws_subnet.application-subnet-1.id, aws_subnet.application-subnet-2.id]
-  target_group_arns         = [aws_lb_target_group.internal_alb_tg.arn]
+  target_group_arns         = [aws_lb_target_group.internal-alb-tg.arn]
 
   tag {
     key                 = "Name"

@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ssm_role" {
-  name = "app-server-ssm-role"
+  name = "${var.environment}-app-server-ssm-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -18,28 +18,24 @@ resource "aws_iam_role" "ssm_role" {
     Name        = "ssm-role"
     Environment = var.environment
   }
-
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_attach" {
   role       = aws_iam_role.ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-
-}
-
-resource "aws_iam_instance_profile" "ssm_profile" {
-  name = "ssm-instance-profile"
-  role = aws_iam_role.ssm_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_attach" {
   role       = aws_iam_role.ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
-  
 }
 
 resource "aws_iam_role_policy_attachment" "cloudwatch_attach" {
   role       = aws_iam_role.ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-  
+}
+
+resource "aws_iam_instance_profile" "ssm_profile" {
+  name = "${var.environment}-ssm-instance-profile"
+  role = aws_iam_role.ssm_role.name
 }

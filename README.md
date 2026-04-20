@@ -9,7 +9,7 @@ This project provisions a production-grade, highly available 3-Tier Web Architec
 The infrastructure is designed for fault tolerance and security, distributed across **two Availability Zones (us-east-1a, us-east-1b)**.
 
 ### 1. Presentation Tier (Public)
-* **External Application Load Balancer (ALB):** Distributes incoming HTTP traffic from the internet across the web servers.
+* **External Application Load Balancer (ALB):** Distributes incoming HTTP/HTTPS traffic from the internet across the web servers. When an ACM certificate ARN is provided, HTTP automatically redirects to HTTPS (TLS 1.3).
 * **Web Servers (Apache on Port 80):** Hosted in private web subnets. They act as a secure reverse proxy, forwarding traffic to the Internal ALB.
 * **NAT Gateways:** Two NAT Gateways (one per AZ) provide outbound internet access for private instances without exposing them to inbound traffic.
 
@@ -28,9 +28,11 @@ The infrastructure is designed for fault tolerance and security, distributed acr
 * **Keyless Access (SSM):** No SSH keys required. Instances are accessed securely via AWS Systems Manager Session Manager.
 * **High Availability:** All layers (Web, App, DB, Network) are redundant across two Availability Zones.
 * **Defense in Depth:** Security Group chaining ensures each tier only accepts traffic from the tier directly above it.
-* **Dynamic Bootstrapping:** Terraform's `templatefile()` injects live infrastructure endpoints (Internal ALB DNS, RDS address) into EC2 user data scripts at apply time.
+* **Optional HTTPS:** Set `certificate_arn` in `terraform.tfvars` to enable HTTPS (TLS 1.3) and automatic HTTP→HTTPS redirect on the external ALB. Leave it unset to serve HTTP only.
+* **Dynamic Bootstrapping:** Terraform's `templatefile()` injects live infrastructure endpoints (Internal ALB DNS, RDS address, Secrets Manager secret ID) into EC2 user data scripts at apply time.
+* **Automatic AMI Resolution:** Instances use the latest Amazon Linux 2 AMI by default. Pin a specific AMI by setting `ec2_ami` in `terraform.tfvars`.
 * **WAF Protection:** AWS WAF WebACL with managed rule groups (OWASP Common, SQLi, Known Bad Inputs, IP Reputation) attached to the external ALB.
-* **Observability:** CloudWatch log groups, CPU-based scaling alarms, and SNS email notifications per environment.
+* **Observability:** CloudWatch log groups, CPU-based autoscaling alarms, SNS email notifications, and a pre-built CloudWatch dashboard covering web/app CPU, ALB request rate and latency, and RDS connections.
 
 ## Prerequisites
 
@@ -55,10 +57,12 @@ terraform_3_tier_web_app_aws/
     └── dev/              # Dev environment: main.tf, variables.tf, terraform.tfvars
 ```
 
-Each module has three files:
+Each module contains:
 * `main.tf` — resource definitions
 * `variables.tf` — input variables
 * `outputs.tf` — values exposed to the calling environment
+
+The `compute` module also contains `data.tf` (AMI data source) and the `data.sh` / `app_data.sh` userdata scripts.
 
 ## Deployment Instructions
 
@@ -81,12 +85,20 @@ The `db_password` variable is sensitive and intentionally has no default. Pass i
 export TF_VAR_db_password="YourSecurePassword123"
 ```
 
-**4. Update `terraform.tfvars`**
+**4. Configure `terraform.tfvars`**
 
-Edit [environments/dev/terraform.tfvars](environments/dev/terraform.tfvars) and set:
-```hcl
-alert_email = "your-email@example.com"
+Copy the example file and fill in your values:
+```bash
+cp terraform.tfvars.example terraform.tfvars
 ```
+
+At a minimum set `alert_email`. To enable HTTPS, also set `certificate_arn`:
+```hcl
+alert_email     = "your-email@example.com"
+certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/..."  # optional
+```
+
+> `terraform.tfvars` is gitignored. `terraform.tfvars.example` is the safe-to-commit reference.
 
 **5. Plan**
 ```bash
@@ -105,14 +117,27 @@ To deploy a `prod` environment using the same modules:
 1. Copy the dev environment folder:
    ```bash
    cp -r environments/dev environments/prod
+   cp environments/prod/terraform.tfvars.example environments/prod/terraform.tfvars
    ```
-2. Update `environments/prod/terraform.tfvars` with prod-specific values (different CIDRs, larger instance counts, alert email, etc.).
-3. Run `terraform init && terraform apply` from `environments/prod/`.
+2. Update `environments/prod/terraform.tfvars` with prod-appropriate values. Key overrides from dev defaults:
+   ```hcl
+   environment             = "prod"
+   instance_type           = "t3.small"
+   skip_final_snapshot     = false   # always take a final snapshot in prod
+   backup_retention_period = 14
+   deletion_protection     = true
+   certificate_arn         = "arn:aws:acm:us-east-1:123456789012:certificate/..."
+   ```
+3. Run from `environments/prod/`:
+   ```bash
+   terraform init && terraform apply
+   ```
 
 The modules are shared — no module code needs to change between environments.
 
 ## Security Notes
 
-* `db_password` should never be committed to source control. Use `TF_VAR_db_password` or a secrets backend (e.g. AWS Secrets Manager, Terraform Cloud variable sets).
-* `terraform.tfvars` contains non-sensitive defaults only. Add `terraform.tfvars` to `.gitignore` if it ever holds secrets.
-* The RDS password is automatically stored in AWS Secrets Manager under `{environment}/db_credentials` by the database module, so application servers retrieve it at runtime rather than having it baked into AMIs.
+* `db_password` should never be committed to source control. Pass it via `export TF_VAR_db_password="..."` or a secrets backend (e.g. Terraform Cloud variable sets).
+* `*.tfvars` files are gitignored by `.gitignore`. Always use `terraform.tfvars.example` as the committed reference template.
+* The RDS password is stored in AWS Secrets Manager under `{environment}/db_credentials` by the database module. Application servers fetch it at boot via the AWS CLI — it is never baked into the AMI or the launch template user data.
+* HTTPS is optional but strongly recommended for non-dev environments. Issue a certificate via AWS Certificate Manager (ACM) and set `certificate_arn` in `terraform.tfvars`. The ALB will automatically redirect all HTTP traffic to HTTPS.

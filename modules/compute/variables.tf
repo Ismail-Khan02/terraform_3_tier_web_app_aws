@@ -9,8 +9,15 @@ variable "aws_region" {
 }
 
 variable "ec2_ami" {
-  description = "AMI ID for EC2 instances"
+  description = "AMI ID for EC2 instances. Defaults to latest Amazon Linux 2 if null."
   type        = string
+  default     = null
+}
+
+variable "instance_type" {
+  description = "EC2 instance type for web and app servers"
+  type        = string
+  default     = "t3.micro"
 }
 
 variable "web_sg_id" {

@@ -1,7 +1,11 @@
+locals {
+  resolved_ami = var.ec2_ami != null ? var.ec2_ami : data.aws_ami.amazon_linux_2.id
+}
+
 resource "aws_launch_template" "web" {
   name_prefix   = "${var.environment}-web-launch-template-"
-  image_id      = var.ec2_ami
-  instance_type = "t2.micro"
+  image_id      = local.resolved_ami
+  instance_type = var.instance_type
 
   network_interfaces {
     associate_public_ip_address = false
@@ -35,7 +39,7 @@ resource "aws_autoscaling_group" "web" {
   min_size                  = var.web_asg_min_size
   desired_capacity          = var.web_asg_desired_capacity
   health_check_type         = "ELB"
-  health_check_grace_period = 300
+  health_check_grace_period = 600
   vpc_zone_identifier       = var.web_subnet_ids
   target_group_arns         = [var.external_alb_tg_arn]
 
@@ -59,8 +63,8 @@ resource "aws_autoscaling_group" "web" {
 
 resource "aws_launch_template" "app" {
   name_prefix   = "${var.environment}-app-launch-template-"
-  image_id      = var.ec2_ami
-  instance_type = "t2.micro"
+  image_id      = local.resolved_ami
+  instance_type = var.instance_type
 
   network_interfaces {
     associate_public_ip_address = false
@@ -75,6 +79,7 @@ resource "aws_launch_template" "app" {
     aws_region = var.aws_region
     db_host    = var.db_address
     db_name    = var.db_name
+    secret_id  = "${var.environment}/db_credentials"
   }))
 
   tag_specifications {
@@ -96,7 +101,7 @@ resource "aws_autoscaling_group" "app" {
   min_size                  = var.app_asg_min_size
   desired_capacity          = var.app_asg_desired_capacity
   health_check_type         = "ELB"
-  health_check_grace_period = 300
+  health_check_grace_period = 600
   vpc_zone_identifier       = var.application_subnet_ids
   target_group_arns         = [var.internal_alb_tg_arn]
 

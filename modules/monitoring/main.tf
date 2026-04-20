@@ -156,3 +156,120 @@ resource "aws_cloudwatch_metric_alarm" "app_cpu_low" {
     Environment = var.environment
   }
 }
+
+resource "aws_cloudwatch_dashboard" "main" {
+  dashboard_name = "${var.environment}-3-tier-app"
+
+  dashboard_body = jsonencode({
+    widgets = [
+      {
+        type   = "metric"
+        x      = 0
+        y      = 0
+        width  = 12
+        height = 6
+        properties = {
+          title  = "Web Tier CPU Utilization"
+          view   = "timeSeries"
+          period = 300
+          stat   = "Average"
+          metrics = [
+            ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", var.web_asg_name]
+          ]
+          annotations = {
+            horizontal = [
+              { value = 80, label = "Scale Up", color = "#ff0000" },
+              { value = 20, label = "Scale Down", color = "#00ff00" }
+            ]
+          }
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 0
+        width  = 12
+        height = 6
+        properties = {
+          title  = "App Tier CPU Utilization"
+          view   = "timeSeries"
+          period = 300
+          stat   = "Average"
+          metrics = [
+            ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", var.app_asg_name]
+          ]
+          annotations = {
+            horizontal = [
+              { value = 80, label = "Scale Up", color = "#ff0000" },
+              { value = 20, label = "Scale Down", color = "#00ff00" }
+            ]
+          }
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          title  = "ALB Request Count"
+          view   = "timeSeries"
+          period = 60
+          stat   = "Sum"
+          metrics = [
+            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", var.external_alb_arn_suffix]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 6
+        width  = 12
+        height = 6
+        properties = {
+          title  = "ALB Target Response Time (s)"
+          view   = "timeSeries"
+          period = 60
+          stat   = "Average"
+          metrics = [
+            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", var.external_alb_arn_suffix]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 12
+        width  = 12
+        height = 6
+        properties = {
+          title  = "RDS Database Connections"
+          view   = "timeSeries"
+          period = 60
+          stat   = "Average"
+          metrics = [
+            ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", var.db_instance_identifier]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 12
+        y      = 12
+        width  = 12
+        height = 6
+        properties = {
+          title  = "RDS CPU Utilization"
+          view   = "timeSeries"
+          period = 60
+          stat   = "Average"
+          metrics = [
+            ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", var.db_instance_identifier]
+          ]
+        }
+      }
+    ]
+  })
+}

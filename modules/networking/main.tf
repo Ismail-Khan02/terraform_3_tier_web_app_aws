@@ -68,7 +68,8 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_eip" "nat" {
-  count = length(var.public_subnet_cidrs)
+  count  = length(var.public_subnet_cidrs)
+  domain = "vpc"
 
   tags = {
     Name        = "nat-eip-${count.index + 1}"

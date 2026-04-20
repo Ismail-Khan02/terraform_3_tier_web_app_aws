@@ -41,9 +41,15 @@ variable "application_subnet_cidrs" {
 }
 
 variable "ec2_ami" {
-  description = "AMI ID for EC2 instances"
+  description = "AMI ID for EC2 instances. Defaults to latest Amazon Linux 2 if null."
   type        = string
-  default     = "ami-0c02fb55956c7d316"
+  default     = null
+}
+
+variable "instance_type" {
+  description = "EC2 instance type for web and app servers"
+  type        = string
+  default     = "t3.micro"
 }
 
 variable "web_asg_desired_capacity" {
@@ -98,6 +104,30 @@ variable "db_name" {
   description = "Database name"
   type        = string
   default     = "mydb"
+}
+
+variable "skip_final_snapshot" {
+  description = "Skip final RDS snapshot on destroy. Use true for dev, false for prod."
+  type        = bool
+  default     = true
+}
+
+variable "backup_retention_period" {
+  description = "Days to retain automated RDS backups (0 disables backups)"
+  type        = number
+  default     = 7
+}
+
+variable "deletion_protection" {
+  description = "Enable deletion protection on ALBs"
+  type        = bool
+  default     = false
+}
+
+variable "certificate_arn" {
+  description = "ACM certificate ARN for HTTPS. Leave null to serve HTTP only."
+  type        = string
+  default     = null
 }
 
 variable "alert_email" {

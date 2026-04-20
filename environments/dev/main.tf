@@ -25,12 +25,14 @@ module "security_groups" {
 module "database" {
   source = "../../modules/database"
 
-  environment          = var.environment
-  db_username          = var.db_username
-  db_password          = var.db_password
-  db_name              = var.db_name
-  database_sg_id       = module.security_groups.database_sg_id
-  db_subnet_group_name = module.networking.db_subnet_group_name
+  environment             = var.environment
+  db_username             = var.db_username
+  db_password             = var.db_password
+  db_name                 = var.db_name
+  database_sg_id          = module.security_groups.database_sg_id
+  db_subnet_group_name    = module.networking.db_subnet_group_name
+  skip_final_snapshot     = var.skip_final_snapshot
+  backup_retention_period = var.backup_retention_period
 }
 
 module "load_balancing" {
@@ -42,6 +44,8 @@ module "load_balancing" {
   application_subnet_ids = module.networking.application_subnet_ids
   alb_sg_id              = module.security_groups.alb_sg_id
   internal_alb_sg_id     = module.security_groups.internal_alb_sg_id
+  deletion_protection    = var.deletion_protection
+  certificate_arn        = var.certificate_arn
 }
 
 module "compute" {
@@ -50,6 +54,7 @@ module "compute" {
   environment              = var.environment
   aws_region               = var.aws_region
   ec2_ami                  = var.ec2_ami
+  instance_type            = var.instance_type
   web_sg_id                = module.security_groups.web_sg_id
   app_sg_id                = module.security_groups.app_sg_id
   instance_profile_name    = module.iam.instance_profile_name
@@ -71,10 +76,12 @@ module "compute" {
 module "monitoring" {
   source = "../../modules/monitoring"
 
-  environment  = var.environment
-  alert_email  = var.alert_email
-  web_asg_name = module.compute.web_asg_name
-  app_asg_name = module.compute.app_asg_name
+  environment             = var.environment
+  alert_email             = var.alert_email
+  web_asg_name            = module.compute.web_asg_name
+  app_asg_name            = module.compute.app_asg_name
+  external_alb_arn_suffix = module.load_balancing.external_alb_arn_suffix
+  db_instance_identifier  = module.database.db_instance_identifier
 }
 
 module "waf" {

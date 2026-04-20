@@ -28,3 +28,15 @@ variable "db_subnet_group_name" {
   description = "DB subnet group name"
   type        = string
 }
+
+variable "skip_final_snapshot" {
+  description = "Skip final snapshot when destroying the RDS instance. Set to true for dev, false for prod."
+  type        = bool
+  default     = false
+}
+
+variable "backup_retention_period" {
+  description = "Number of days to retain automated RDS backups (0 disables backups)"
+  type        = number
+  default     = 7
+}

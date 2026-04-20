@@ -27,3 +27,15 @@ variable "internal_alb_sg_id" {
   description = "Security group ID for the internal ALB"
   type        = string
 }
+
+variable "deletion_protection" {
+  description = "Enable deletion protection on both ALBs"
+  type        = bool
+  default     = false
+}
+
+variable "certificate_arn" {
+  description = "ACM certificate ARN for HTTPS. When set, HTTP redirects to HTTPS and a port 443 listener is created."
+  type        = string
+  default     = null
+}

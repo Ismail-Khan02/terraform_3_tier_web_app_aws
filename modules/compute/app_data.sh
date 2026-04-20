@@ -1,14 +1,11 @@
 #!/bin/bash
-# Delay to allow Networking and NAT Gateway to stabilize (Temporary Hack)
-sleep 180
-
 # FIX 1: Install Node.js 20.x (Current LTS) instead of End-of-Life 16.x
 curl -sL https://rpm.nodesource.com/setup_20.x | bash -
 yum install -y nodejs awscli
 
 # Fetch DB credentials from Secrets Manager at runtime
 SECRET=$(aws secretsmanager get-secret-value \
-  --secret-id "3-tier/db_credentials" \
+  --secret-id "${secret_id}" \
   --region ${aws_region} \
   --query SecretString \
   --output text)

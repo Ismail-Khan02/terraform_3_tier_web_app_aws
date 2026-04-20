@@ -5,7 +5,7 @@ resource "aws_lb" "external" {
   security_groups    = [var.alb_sg_id]
   subnets            = var.public_subnet_ids
 
-  enable_deletion_protection = false
+  enable_deletion_protection = var.deletion_protection
 
   tags = {
     Name        = "external-alb"
@@ -35,10 +35,36 @@ resource "aws_lb_target_group" "external" {
   }
 }
 
-resource "aws_lb_listener" "external" {
+# HTTP listener — forwards traffic when no certificate is provided,
+# redirects to HTTPS when a certificate ARN is set.
+resource "aws_lb_listener" "external_http" {
   load_balancer_arn = aws_lb.external.arn
   port              = "80"
   protocol          = "HTTP"
+
+  default_action {
+    type = var.certificate_arn != null ? "redirect" : "forward"
+
+    dynamic "redirect" {
+      for_each = var.certificate_arn != null ? [1] : []
+      content {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+
+    target_group_arn = var.certificate_arn == null ? aws_lb_target_group.external.arn : null
+  }
+}
+
+resource "aws_lb_listener" "external_https" {
+  count             = var.certificate_arn != null ? 1 : 0
+  load_balancer_arn = aws_lb.external.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = var.certificate_arn
 
   default_action {
     type             = "forward"
@@ -53,7 +79,7 @@ resource "aws_lb" "internal" {
   security_groups    = [var.internal_alb_sg_id]
   subnets            = var.application_subnet_ids
 
-  enable_deletion_protection = false
+  enable_deletion_protection = var.deletion_protection
 
   tags = {
     Name        = "internal-alb"
